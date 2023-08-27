@@ -11,7 +11,7 @@ const {
 router.route('/').get(getUsers).post(createUser);
 // api/users/:id
 router.route('/:userId').get(getOneUser).delete(deleteUser);
-
+// api/users/:id/thoughts
 router.route('/:userId/thoughts').post(updateThought);
 
 module.exports = router;
