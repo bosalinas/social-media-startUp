@@ -15,15 +15,21 @@ const userSchema = new Schema(
             unique: true,
             //must match validation email address in db
         },
-        thoughts: [{type: Schema.Types.ObjectId, ref: 'thought'}],
-        friends: [{type: Schema.Types.ObjectId, ref: 'user'}],
+        thoughts: [{
+            type: Schema.Types.ObjectId,
+            ref: 'thought'
+        }],
+        friends: [{
+            type: Schema.Types.ObjectId,
+            ref: 'user'
+        }],
     },
 );
 // virtual: return a value that is not in the db. 
 userSchema.virtual('friendCount').get(function () {
     return this.friends.length;
-  });
-  
+});
+
 
 const User = model('user', userSchema)
 
