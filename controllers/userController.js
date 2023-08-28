@@ -40,31 +40,53 @@ module.exports = {
         }
     },
 // delete a user by id
-//     async deleteUser(req, res) {
-//         try {
-//             const user = await User.findOneAndRemove({ _id: req.params.objectId });
+    async deleteUser(req, res) {
+        try {
+            const user = await User.findOneAndRemove({ _id: req.params.userId });
 
-//             if (!user) {
-//                 return res.status(404).json({ message: 'No such user exists' });
-//             }
-// // delete thoughts with user
-//             // const thought = await Thought.findOneAndUpdate(
-//             //     { username: req.params.ObjectId },
-//             //     { $pull: { students: req.params.ObjectId } },
-//             //     { new: true }
-//             // );
+            if (!user) {
+                return res.status(404).json({ message: 'No such user exists' });
+            }
+// delete thoughts with user
+            // const thought = await Thought.findOneAndUpdate(
+            //     { username: req.params.ObjectId },
+            //     { $pull: { students: req.params.ObjectId } },
+            //     { new: true }
+            // );
 
-//             // if (!thought) {
-//             //     return res.status(404).json({
-//             //         message: 'User deleted, but no thoughts found',
-//             //     });
-//             // }
+            // if (!thought) {
+            //     return res.status(404).json({
+            //         message: 'User deleted, but no thoughts found',
+            //     });
+            // }
 
-//             res.json({ message: 'User & thoughts successfully deleted' });
-//         } catch (err) {
-//             console.log(err);
-//             res.status(500).json(err);
-//         }
-//     },
+            res.json({ message: 'User successfully deleted' });
+        } catch (err) {
+            console.log(err);
+            res.status(500).json(err);
+        }
+    },
 // put (update) a user by id
+async updateThought(req, res) {
+    console.log('You are updating user');
+    console.log(req.body);
+
+    try {
+      const user = await User.findOneAndUpdate(
+        { _id: req.params.userId },
+        { $addToSet: { thoughts: req.body } },
+        { runValidators: true, new: true }
+      );
+
+      if (!user) {
+        return res
+          .status(404)
+          .json({ message: 'No user found with that ID' });
+      }
+
+      res.json(user);
+    } catch (err) {
+      res.status(500).json(err);
+    }
+  },
 };

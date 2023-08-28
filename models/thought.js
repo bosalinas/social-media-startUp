@@ -9,19 +9,16 @@ const thoughtSchema = new Schema(
             minLength: 1,
             maxLength: 280
         },
+// getter method: get date in JSON format for date
         createdAt: {
             type: Date,
             default: Date.now,
             toJSON: { getters: true },
         },
-        // getter method: get date in JSON format for date
-        username: [
-            {
-                type: Schema.Types.ObjectId,
-                ref: 'user',
-                required: true
-            },
-        ],
+        username: {
+            type: String, 
+            required: true,
+        },
         reactions: [reactionSchema]
     }
 )
