@@ -1,5 +1,5 @@
 const { ObjectId } = require('mongoose').Types;
-const { User, Thought } = require('../models');
+const { User, Thought, reactionSchema } = require('../models');
 
 module.exports = {
   // get all thoughts
@@ -14,10 +14,10 @@ module.exports = {
   // get single thought by id
   async getOneThought(req, res) {
     try {
-      const thoughts = await Thought.findOne({_id: req.body.thoughtId})
+      const thoughts = await Thought.findOne({ _id: req.body.thoughtId })
         .select('-__v');
       if (!thoughts) {
-        return res.status(404).json({ message: 'No thought with that id'})
+        return res.status(404).json({ message: 'No thought with that id' })
       }
       res.json({
         thoughts
@@ -31,7 +31,13 @@ module.exports = {
   async createThought(req, res) {
     try {
       const thought = await Thought.create(req.body);
-      // const updatedUser = await User.findOneAndUpdate(req.body.thoughts);
+
+      const updatedUser = await User.findOneAndUpdate(
+        { _id: req.body.userId },
+        { $push: { thoughts: _id } },
+        { new: true }
+      )
+
       res.json(thought);
       // res.json(updatedUser);
     } catch (err) {
@@ -66,6 +72,30 @@ module.exports = {
 
       if (!thought) {
         res.status(404).json({ message: 'No thought with that ID' });
+      }
+    } catch (err) {
+      res.status(500).json(err);
+    }
+  },
+
+  // POST to create a reaction stored in thoughts array field
+  async createReaction(req, res) {
+    try {
+      const reaction = await reactionSchema.create(req.body);
+      res.json(reaction);
+    } catch (err) {
+      console.log(err);
+      return res.status(500).json(err);
+    }
+  },
+
+  // DELETE to pull and remove a reaction by the reaction's reactionId value
+  async deleteReaction(req, res) {
+    try {
+      const reaction = await reactionSchema.findOneAndDelete({ _id: req.params.reactionId });
+
+      if (!reaction) {
+        res.status(404).json({ message: 'No reaction with that ID' });
       }
     } catch (err) {
       res.status(500).json(err);
