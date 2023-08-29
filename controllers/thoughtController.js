@@ -79,13 +79,12 @@ module.exports = {
   // POST to create a reaction stored in thoughts array field
   async createReaction(req, res) {
     try {
-      const reaction = await reactionSchema.create(req.body);
-
-      const updatedThought = await Thought.findOneAndUpdate(
-        { _id: req.body.thoughtId },
-        { $push: { reactionSchema: reaction._id } },
-        { new: true }
+      const reaction = await Thought.findOneAndUpdate(
+        { _id: req.params.thoughtId },
+        { $push: { reactions: req.body }},
+        { runValidators: true, new: true }
       );
+
       res.json(reaction);
     } catch (err) {
       console.log(err);
@@ -96,13 +95,17 @@ module.exports = {
   // DELETE to pull and remove a reaction by the reaction's reactionId value
   async deleteReaction(req, res) {
     try {
-      const reaction = await reactionSchema.findOneAndDelete({ _id: req.params.reactionId });
-
+      const reaction = await Thought.findOneAndDelete(
+        { _id: req.params.thoughtId },
+        { $pull: { reactions: { reactionId: req.params.reactionId }}},
+        {runValidators: true, new: true }
+        );
+    
       if (!reaction) {
         res.status(404).json({ message: 'No reaction with that ID' });
       }
     } catch (err) {
       res.status(500).json(err);
     }
-  },
+}
 };
