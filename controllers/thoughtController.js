@@ -34,12 +34,10 @@ module.exports = {
 
       const updatedUser = await User.findOneAndUpdate(
         { _id: req.body.userId },
-        { $push: { thoughts: _id } },
+        { $push: { thoughts: thought._id } },
         { new: true }
       )
-
       res.json(thought);
-      // res.json(updatedUser);
     } catch (err) {
       console.log(err);
       return res.status(500).json(err);
@@ -50,7 +48,7 @@ module.exports = {
   async updateThought(req, res) {
     try {
       const thought = await Thought.findOneAndUpdate(
-        { _id: req.params.thoughtId },
+        { _id: req.params.thought._id },
         { $set: req.body },
         { runValidators: true, new: true }
       );
@@ -82,6 +80,12 @@ module.exports = {
   async createReaction(req, res) {
     try {
       const reaction = await reactionSchema.create(req.body);
+
+      const updatedThought = await Thought.findOneAndUpdate(
+        { _id: req.body.thoughtId },
+        { $push: { reactionSchema: reaction._id } },
+        { new: true }
+      );
       res.json(reaction);
     } catch (err) {
       console.log(err);
