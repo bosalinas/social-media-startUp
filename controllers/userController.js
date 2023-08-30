@@ -92,7 +92,7 @@ async updateThought(req, res) {
 
   async addFriend(req, res) {
     try {
-        const user = await user.findOneAndUpdate(
+        const user = await User.findOneAndUpdate(
             { _id: req.params.userId },
             { $addToSet: { friends: req.body.friendId }},
             { new: true, runValidators: true}
@@ -113,7 +113,8 @@ async updateThought(req, res) {
 // delete friend
 async deleteFriend(req, res) {
     try {
-        const user = await user.findOneAndUpdate(
+        console.log("error in try:", req.params.userId);
+        const user = await User.findOneAndUpdate(
             { _id: req.params.userId },
             { $pull: { friends: req.params.friendId }},
             { new: true }
@@ -126,6 +127,7 @@ async deleteFriend(req, res) {
         res.json(user)
 
     } catch(err) {
+        console.log("error in catch block:", err);
         res.status(500).json(err);
     }
 },
