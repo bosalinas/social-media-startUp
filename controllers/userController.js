@@ -4,7 +4,7 @@ const { User, Thought } = require('../models');
 module.exports = {
     async getUsers(req, res) {
         try {
-            const users = await User.find();
+            const users = await User.find().select('-__v')
             console.log(users)
             res.status(200).json(users)
         }
@@ -47,19 +47,6 @@ module.exports = {
             if (!user) {
                 return res.status(404).json({ message: 'No such user exists' });
             }
-// delete thoughts with user
-            // const thought = await Thought.findOneAndUpdate(
-            //     { username: req.params.ObjectId },
-            //     { $pull: { students: req.params.ObjectId } },
-            //     { new: true }
-            // );
-
-            // if (!thought) {
-            //     return res.status(404).json({
-            //         message: 'User deleted, but no thoughts found',
-            //     });
-            // }
-
             res.json({ message: 'User successfully deleted' });
         } catch (err) {
             console.log(err);
@@ -89,4 +76,46 @@ async updateThought(req, res) {
       res.status(500).json(err);
     }
   },
+
+  async addFriend(req, res) {
+    try {
+        const user = await User.findOneAndUpdate(
+            { _id: req.params.userId },
+            { $addToSet: { friends: req.body.friendId }},
+            { new: true, runValidators: true}
+        )
+
+        if(!user){
+            return res.status(404).json({message:`No user found with this id`});
+        }
+
+        res.json(user)
+        return;
+
+    } catch(err) {
+        res.status(500).json(err);
+    }
+},
+
+// delete friend
+async deleteFriend(req, res) {
+    try {
+        console.log("error in try:", req.params.userId);
+        const user = await User.findOneAndUpdate(
+            { _id: req.params.userId },
+            { $pull: { friends: req.params.friendId }},
+            { new: true }
+        )
+
+        if(!user){
+            return res.status(404).json({message:`Could not find that user`});
+        }
+
+        res.json(user)
+        res.json({ message: 'Friend successfully deleted' });
+    } catch(err) {
+        console.log("error in catch block:", err);
+        res.status(500).json(err);
+    }
+},
 };
