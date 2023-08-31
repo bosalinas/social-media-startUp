@@ -47,19 +47,6 @@ module.exports = {
             if (!user) {
                 return res.status(404).json({ message: 'No such user exists' });
             }
-// delete thoughts with user
-            // const thought = await Thought.findOneAndUpdate(
-            //     { username: req.params.ObjectId },
-            //     { $pull: { students: req.params.ObjectId } },
-            //     { new: true }
-            // );
-
-            // if (!thought) {
-            //     return res.status(404).json({
-            //         message: 'User deleted, but no thoughts found',
-            //     });
-            // }
-
             res.json({ message: 'User successfully deleted' });
         } catch (err) {
             console.log(err);
@@ -125,7 +112,7 @@ async deleteFriend(req, res) {
         }
 
         res.json(user)
-
+        res.json({ message: 'Friend successfully deleted' });
     } catch(err) {
         console.log("error in catch block:", err);
         res.status(500).json(err);
